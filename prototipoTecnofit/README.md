@@ -1,7 +1,22 @@
 # Prototipo para Tecnofit
 
-## Passos para a instalação do ambiente
+## Dependencias
+```
+Apache2
+PHP 7.2.24^
+Composer 1.6.3
+MariaDB 10
+```
 
+## Passos para a preparação do ambiente após o git clone
+#### Criar um .env apartir do exemplo
+```
+cp .env.example .env
+```
+#### Comando para rodar o composer
+```
+composer dump-autoload
+```
 #### Comando para criar e popular o banco de dados
 ```
 mysql -u admin -p < ./scripts/dataBaseTecnofit.sql
@@ -40,6 +55,8 @@ sudo systemctl restart apache2
 
 [install-mariadb-on-ubuntu](https://www.digitalocean.com/community/tutorials/how-to-install-mariadb-on-ubuntu-18-04)
 
+[install-composer](https://cursos.alura.com.br/forum/topico-instalando-no-linux-304622)
+
 [create-user](https://mariadb.com/kb/en/create-user/)
 
 [create-database](https://mariadb.com/kb/en/create-database/)
@@ -47,20 +64,3 @@ sudo systemctl restart apache2
 [Fetch_API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch)
 
 ---
-
-Dependencias
-```
-Apache2
-PHP 7.4^
-Composer 
-MariaDB 10
-```
-
-Comandos utilizados para preparar o ambiente
-```
-php -m | grep mysqli
-vim /etc/php/7.2/fpm/php.ini
-vim /etc/php/7.2/cli/php.ini
-sudo systemctl restart php7.2-fpm
-composer dump-autoload
-```
