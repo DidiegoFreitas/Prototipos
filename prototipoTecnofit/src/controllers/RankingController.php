@@ -16,9 +16,9 @@ class RankingController {
         $this->movement = new MovementModel();
     }
 
-    public function index() {
+    public function getAll() {
         try {
-            $data = $this->movement->getRanking();
+            $data = $this->movement->getAllRanking();
             $this->http->response($data);
         } catch (\Exception $e) {
             // implementar uma forma de salvar o log de excessoes
@@ -26,10 +26,30 @@ class RankingController {
         }
     }
 
-    public function searchByPHP() {
+    public function getByMovement($idMovement) {
         try {
-            // $data = $this->movement->getRanking();
-            // $this->http->response($data);
+            $data = $this->movement->getRankingByMovement($idMovement);
+            $this->http->response($data);
+        } catch (\Exception $e) {
+            // implementar uma forma de salvar o log de excessoes
+            $this->http->responseError('Falha ao tratar a requisição');
+        }
+    }
+
+    public function getAllPHP() {
+        try {
+            $data = $this->movement->getAllRankingPHP();
+            $this->http->response($data);
+        } catch (\Exception $e) {
+            // implementar uma forma de salvar o log de excessoes
+            $this->http->responseError('Falha ao tratar a requisição');
+        }
+    }
+
+    public function getByMovementPHP($idMovement) {
+        try {
+            $data = $this->movement->getRankingByMovementPHP($idMovement);
+            $this->http->response($data);
         } catch (\Exception $e) {
             // implementar uma forma de salvar o log de excessoes
             $this->http->responseError('Falha ao tratar a requisição');
