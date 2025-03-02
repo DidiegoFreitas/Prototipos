@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        table {
+            border-spacing: 0px;
+            background:#fafafa;
+            font-family: Arial, sans-serif;
+        }
+        table tr th {
+            border-bottom: 1px solid #d3d3d3;
+        }
+        table tr th,
+        table tr td {
+            padding: 5px 10px;
+        }
+        table tr:nth-child(even) {
+            background:lightgray;
+        }
+    </style>
+</head>
+<body>
+    <h1>Teste da API</h1>
+    <div id="responseApi"><!-- DINAMIC --></div>
+    <script>
+        async function getData() {
+            const url = window.location.origin + '/prototipoTecnofit/apiTecnofit/ranking';
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Response status: ${response.status}`);
+                }
+                const json = await response.json();
+                createTable(json.data);
+            } catch (error) {
+                console.error(error.message);
+            }
+        }
+        getData();
+
+        function createTable(data) {
+            const columns = ['position', 'user_name', 'movement_name', 'personal_record', 'record_date'];
+            const elementResponseApi = document.getElementById('responseApi');
+            const elementTable = document.createElement("table");
+
+            const elementRowHeader = document.createElement("tr");
+            columns.forEach(col => {
+                const elementCol = document.createElement("th");
+                elementCol.innerText = col;
+                elementRowHeader.appendChild(elementCol);
+            });
+            elementTable.appendChild(elementRowHeader);
+
+            data.forEach(item => {
+                const elementRow = document.createElement("tr");
+                columns.forEach(col => {
+                    if (item[col]) {
+                        const elementCol = document.createElement("td");
+                        elementCol.innerText = item[col];
+                        elementRow.appendChild(elementCol);
+                    }
+                });
+                elementTable.appendChild(elementRow);
+            });
+            elementResponseApi.innerText = ''; // so para evitar de montar uma tabela junto de outra
+            elementResponseApi.appendChild(elementTable);
+        }
+    </script>
+</body>
+</html>
