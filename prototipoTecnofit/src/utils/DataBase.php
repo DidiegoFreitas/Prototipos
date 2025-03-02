@@ -21,15 +21,10 @@ class DataBase {
         }
     }
 
-    public function query($sql, $params = []) {
+    public function query($sql) {
         $stmt = $this->conn->prepare($sql);
         if ($stmt === false) {
             die("Erro na preparação da query: " . $this->conn->error);
-        }
-
-        if (!empty($params)) {
-            $types = str_repeat('s', count($params));
-            $stmt->bind_param($types, ...$params);
         }
 
         $stmt->execute();
@@ -38,15 +33,10 @@ class DataBase {
         return $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
     }
 
-    public function execute($sql, $params = []) {
+    public function execute($sql) {
         $stmt = $this->conn->prepare($sql);
         if ($stmt === false) {
             die("Erro na preparação da query: " . $this->conn->error);
-        }
-
-        if (!empty($params)) {
-            $types = str_repeat('s', count($params));
-            $stmt->bind_param($types, ...$params);
         }
 
         return $stmt->execute();

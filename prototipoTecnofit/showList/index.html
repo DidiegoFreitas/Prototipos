@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+        html,
+        body {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            overflow: auto;
+            flex-direction: column;
+        }
         table {
             border-spacing: 0px;
             background:#fafafa;
@@ -20,34 +31,65 @@
         table tr:nth-child(even) {
             background:lightgray;
         }
+        table tr.active {
+            font-weight: bold;
+            background-color: #85f197;
+        }
+        #tableMovement {
+            height: 100%;
+            display: flex;
+            overflow: auto;
+        }
+        #tableMovement tr:not(:first-child):hover {
+            opacity: 0.8;
+            cursor: pointer;
+        }
+        #responseApi {
+            padding: 10px;
+            overflow: auto;
+            border-radius: 5px;
+            border: 1px solid #a1a1a1;
+        }
+        .flex {
+            gap: 14px;
+            display: flex;
+            height: calc(100% - 80px);
+        }
     </style>
 </head>
 <body>
     <h1>Teste da API</h1>
-    <div id="responseApi"><!-- DINAMIC --></div>
+    <div class="flex">
+        <div id="tableMovement"><!-- DINAMIC --></div>
+        <div id="responseApi">
+            <span><b>Click em algum Movement</b></span>
+        </div>
+    </div>
     <script>
-        async function getData() {
-            const url = window.location.origin + '/prototipoTecnofit/apiTecnofit/ranking';
+        const headerRanking = ['rank', 'user_name', 'personal_record', 'record_date'];
+
+        async function requestApi(endPoint, callback = ()=>{}) {
+            console.time(`requestApi > ${endPoint}`);
+            const url = `${window.location.origin}/prototipoTecnofit/apiTecnofit/${endPoint}`;
             try {
                 const response = await fetch(url);
                 if (!response.ok) {
                     throw new Error(`Response status: ${response.status}`);
                 }
                 const json = await response.json();
-                createTable(json.data);
+                callback(json.data);
             } catch (error) {
                 console.error(error.message);
             }
+            console.timeEnd(`requestApi > ${endPoint}`);
         }
-        getData();
 
-        function createTable(data) {
-            const columns = ['position', 'user_name', 'movement_name', 'personal_record', 'record_date'];
-            const elementResponseApi = document.getElementById('responseApi');
+        function createTable(idElement, cols, data, callbackClickRow = () => {}) {
+            const element = document.getElementById(idElement);
             const elementTable = document.createElement("table");
 
             const elementRowHeader = document.createElement("tr");
-            columns.forEach(col => {
+            cols.forEach(col => {
                 const elementCol = document.createElement("th");
                 elementCol.innerText = col;
                 elementRowHeader.appendChild(elementCol);
@@ -56,7 +98,10 @@
 
             data.forEach(item => {
                 const elementRow = document.createElement("tr");
-                columns.forEach(col => {
+                elementRow.onclick = function (e) {
+                    callbackClickRow(e, item);
+                };
+                cols.forEach(col => {
                     if (item[col]) {
                         const elementCol = document.createElement("td");
                         elementCol.innerText = item[col];
@@ -65,9 +110,27 @@
                 });
                 elementTable.appendChild(elementRow);
             });
-            elementResponseApi.innerText = ''; // so para evitar de montar uma tabela junto de outra
-            elementResponseApi.appendChild(elementTable);
+            element.innerText = ''; // so para evitar de montar uma tabela junto de outra
+            element.appendChild(elementTable);
         }
+
+        requestApi('movement', (data) => {
+            createTable('tableMovement', ['id', 'name'], data, (e, row)=>{
+                const elementTableMovement = document.getElementById('tableMovement');
+                const rowsActive = elementTableMovement.querySelectorAll('.active');
+                rowsActive.forEach(rowActive => {
+                    rowActive.classList.remove('active');
+                });
+                const tr = e.target.parentNode;
+                tr.classList.add('active');
+                requestApi(`ranking/${row.id}`, (data) => {
+                    createTable('responseApi', headerRanking, data);
+                });
+                // requestApi(`rankingPHP/${row.id}`, (data) => {
+                //     createTable('responseApi', headerRanking, data);
+                // });
+            });
+        });
     </script>
 </body>
 </html>
